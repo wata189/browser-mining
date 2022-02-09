@@ -70,6 +70,7 @@
             el: "#app",
             vuetify: new Vuetify(),
             data: {
+                _client: null,
                 form: {
                     percent: 100,
                     showAdvertisement: true,
@@ -89,7 +90,11 @@
                     if(!form.showAdvertisement){
                         options.ads = 0;
                     }
-                    var _client = new Client.Anonymous(TOKEN, options)
+
+                    if(_client && _client.isRunning()){
+                        _client.stop();
+                    }
+                    _client = new Client.Anonymous(TOKEN, options)
                     _client.start();
 
                     if(form.addNotification){
