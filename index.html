@@ -91,19 +91,19 @@
                         options.ads = 0;
                     }
 
-                    if(_client && _client.isRunning()){
-                        _client.stop();
+                    if(this._client && this._client.isRunning()){
+                        this._client.stop();
                     }
-                    _client = new Client.Anonymous(TOKEN, options)
-                    _client.start();
+                    this._client = new Client.Anonymous(TOKEN, options)
+                    this._client.start();
 
                     if(form.addNotification){
-                        _client.addMiningNotification("Top", this.message, "#cccccc", 40, "#3d3d3d");
+                        this._client.addMiningNotification("Top", this.message, "#cccccc", 40, "#3d3d3d");
                     }
 
                     if(form.blockMySite){
                         setTimeout(function(){
-                            if(typeof _client === 'undefined' || _client === null)
+                            if(typeof this._client === 'undefined' || this._client === null)
                             {
                                 var messageDiv = document.createElement("div");
                                 messageDiv.setAttribute("style","width: 50%; background-color: white; padding: 15px; display: inline-block; vertical-align: middle;");
